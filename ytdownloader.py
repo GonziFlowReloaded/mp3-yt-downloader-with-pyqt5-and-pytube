@@ -1,10 +1,14 @@
 
+import imp
+from logging import exception
+import moviepy.editor as mp
 
 import os
 from PyQt5 import uic, QtWebEngineWidgets, QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QLineEdit, QMessageBox, QMainWindow
 import sys
 from pytube import YouTube
+
 #Importar 
 class PROGRAMA (QMainWindow):
     def __init__(self):
@@ -28,14 +32,18 @@ class PROGRAMA (QMainWindow):
 
     def descargar(self):
         yt = YouTube(self.linkardo)
-        video = yt.streams.filter(only_audio=True).first()
+        video = yt.streams.get_by_itag("251")
+        
         destination = os.path.join(os.getcwd(), "Descargas")
         if not os.path.exists(destination):
             os.makedirs(destination)
+        
         out_file = video.download(destination)
+
         base, ext = os.path.splitext(out_file)
         new_file = base + ".mp3"
-        os.rename(out_file, new_file)
+
+        os.replace(out_file, new_file)
         
         QMessageBox.information(self, "Descarga", "Descarga completada")
     
