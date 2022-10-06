@@ -1,11 +1,13 @@
 
 import imp
 from logging import exception
+import time
 import moviepy.editor as mp
 
 import os
 from PyQt5 import uic, QtWebEngineWidgets, QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QLineEdit, QMessageBox, QMainWindow
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QLineEdit, QMessageBox, QMainWindow, QProgressBar
+from PyQt5.QtCore import Qt, QThread
 import sys
 from pytube import YouTube
 
@@ -53,6 +55,24 @@ class PROGRAMA (QMainWindow):
             event.accept()
         else:
             event.ignore()
+    def iniciarBarraProgreso(self):
+        self.hilo = Hilo()
+        self.hilo.chv.connect(self.actualizarBarraProgreso)
+        self.hilo.start()
+    def actualizarBarraProgreso(self, valor):
+        self.barraProgreso.setValue(valor)
+        if valor == 100:
+            self.labelCargado.setText("Descarga completada")
+            self.botonDescarga.setEnabled(False)
+
+class Hilo(QThread):
+    chv=QtCore.pyqtSignal(int)
+    def run(self):
+        contador = 0
+        while contador < 100:
+            cont+=4
+            time.sleep(0.1)
+            self.chv.emit(contador)
 
 if "__main__" == __name__:
     app = QApplication(sys.argv)
